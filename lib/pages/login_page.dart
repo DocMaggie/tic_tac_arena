@@ -71,7 +71,31 @@ class _LoginPageState extends State<LoginPage> {
                   color: Colors.black,
                 ),
               ),
-            )
+            ),
+            const SizedBox(height: 10.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Don\'t have an Account yet?  ',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.inversePrimary,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushReplacementNamed(context, '/register');
+                  },
+                  child: Text(
+                    'Sign up',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.inversePrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ]
         ),
       )
