@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tic_tac_arena/api/login_api.dart';
 import 'package:tic_tac_arena/globals.dart';
-import 'package:tic_tac_arena/models/credentials.dart';
+import 'package:tic_tac_arena/models/login_input.dart';
 import 'package:tic_tac_arena/ui_components/form_button.dart';
 import 'package:tic_tac_arena/ui_components/form_title.dart';
 import '../ui_components/form_text_field.dart';
@@ -49,14 +49,15 @@ class _LoginPageState extends State<LoginPage> {
             ElevatedButton(
               onPressed: () async {
                 authToken = await login(
-                  Credentials(
+                  context,
+                  LoginInput(
                     username: usernameController.text,
                     password: passwordController.text
                   )
                 );
                 print('Evo: $authToken');
                 if (authToken != null) {
-                  Navigator.of(context).pushReplacementNamed('/register');
+                  Navigator.of(context).pushReplacementNamed('/games');
                 }
               },
               style: ButtonStyle(
@@ -77,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  'Don\'t have an Account yet?  ',
+                  'Don\'t have an account yet?  ',
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.inversePrimary,
                   ),

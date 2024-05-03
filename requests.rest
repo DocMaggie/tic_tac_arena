@@ -1,4 +1,4 @@
-// START: Login
+// START: Login and Registration
 
 POST https://tictactoe.aboutdream.io/login/
 Content-Type: application/json
@@ -8,7 +8,17 @@ Content-Type: application/json
   "password": "mypassword"
 }
 
-// END: Login
+###
+
+POST https://tictactoe.aboutdream.io/register/
+Content-Type: application/json
+
+{
+  "username": "domagojsed",
+  "password": "mypassword"
+}
+
+// END: Login and Registration
 
 // START: Authenticated endpoints
 
@@ -16,6 +26,12 @@ Content-Type: application/json
 @authToken = "688d80e5b67d2bac660c52821cdedcfe35b3ac2f"
 
 GET https://tictactoe.aboutdream.io/games/
+Content-Type: application/json
+Authorization: Bearer 688d80e5b67d2bac660c52821cdedcfe35b3ac2f
+
+###
+
+GET https://tictactoe.aboutdream.io/users/?limit=100&offset=50
 Content-Type: application/json
 Authorization: Bearer 688d80e5b67d2bac660c52821cdedcfe35b3ac2f
 

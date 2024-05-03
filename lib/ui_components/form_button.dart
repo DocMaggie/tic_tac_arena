@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tic_tac_arena/api/login_api.dart';
-import 'package:tic_tac_arena/models/credentials.dart';
+import 'package:tic_tac_arena/models/login_input.dart';
 
 class TicTacArenaButton extends StatefulWidget {
   const TicTacArenaButton({
@@ -29,7 +29,8 @@ class _TicTacArenaButtonState extends State<TicTacArenaButton> {
     return ElevatedButton(
       onPressed: () {
         login(
-          const Credentials(
+          context,
+          const LoginInput(
             username: 'domagoj',
             password: 'mypassword'
           )

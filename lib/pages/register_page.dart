@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:tic_tac_arena/api/register_api.dart';
+import 'package:tic_tac_arena/globals.dart';
+import 'package:tic_tac_arena/models/register_input.dart';
 import 'package:tic_tac_arena/ui_components/form_title.dart';
 import 'package:tic_tac_arena/ui_components/form_text_field.dart';
 
@@ -17,6 +20,14 @@ class _RegisterPageState extends State<RegisterPage> {
     bool isPasswordObscure = true;
     TextEditingController usernameController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
+    TextEditingController repeatPasswordController = TextEditingController();
+
+    SnackBar snackBar = SnackBar(
+      content: Text('Successfully registered as ${usernameController.text}. You may advance to Login now.'),
+    );
+    SnackBar unmatchingPasswordsSnackBar = SnackBar(
+      content: Text('Passwords do not match. Please retype carefully.'),
+    );
 
     return Scaffold(
       body: Container(
@@ -25,7 +36,7 @@ class _RegisterPageState extends State<RegisterPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const TicTacArenaTitle(text: 'Register'),
+            const TicTacArenaTitle(text: 'Registration'),
             const SizedBox(height: 25.0),
             TicTacArenaTextInput(
               icon: Icons.person,
@@ -39,6 +50,65 @@ class _RegisterPageState extends State<RegisterPage> {
               hint: 'Password',
               obscure: isPasswordObscure,
               controller: passwordController,
+            ),
+            const SizedBox(height: 25.0),
+            TicTacArenaTextInput(
+              icon: Icons.lock,
+              hint: 'Repeat Password',
+              obscure: isPasswordObscure,
+              controller: repeatPasswordController,
+            ),
+            const SizedBox(height: 25.0),
+            ElevatedButton(
+              onPressed: () async {
+                if (passwordController.text == repeatPasswordController.text) {
+                  register(
+                    context,
+                    RegisterInput(
+                      username: usernameController.text,
+                      password: passwordController.text
+                    )
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(unmatchingPasswordsSnackBar);
+                }
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(
+                  Theme.of(context).colorScheme.inversePrimary
+                ),
+              ),
+              child: const Text(
+                'REGISTER',
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Already have an account?  ',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.inversePrimary,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushReplacementNamed(context, '/login');
+                  },
+                  child: Text(
+                    'Login',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.inversePrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ]
         ),

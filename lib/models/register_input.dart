@@ -1,9 +1,9 @@
-class Credentials {
+class RegisterInput {
 
   final String username;
   final String password;
 
-  const Credentials({
+  const RegisterInput({
     required this.username,
     required this.password
   });

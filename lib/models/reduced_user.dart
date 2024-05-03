@@ -1,9 +1,9 @@
-class Player {
+class ReducedUser {
 
   final int id;
   final String username;
 
-  const Player({
+  const ReducedUser({
     required this.id,
     required this.username
   });
