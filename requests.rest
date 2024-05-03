@@ -1,0 +1,22 @@
+// START: Login
+
+POST https://tictactoe.aboutdream.io/login/
+Content-Type: application/json
+
+{
+  "username": "domagoj",
+  "password": "mypassword"
+}
+
+// END: Login
+
+// START: Authenticated endpoints
+
+###
+@authToken = "688d80e5b67d2bac660c52821cdedcfe35b3ac2f"
+
+GET https://tictactoe.aboutdream.io/games/
+Content-Type: application/json
+Authorization: Bearer 688d80e5b67d2bac660c52821cdedcfe35b3ac2f
+
+// END: Authenticated endpoints
