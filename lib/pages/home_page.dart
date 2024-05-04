@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:tic_tac_arena/api/get_games_api.dart';
+import 'package:tic_tac_arena/api/get_users_api.dart';
 import 'package:tic_tac_arena/api/logout_api.dart';
 import 'package:tic_tac_arena/globals.dart';
 import 'package:tic_tac_arena/models/game.dart';
+import 'package:tic_tac_arena/models/game_status.dart';
 import 'package:tic_tac_arena/ui_components/form_title.dart';
 import 'package:tic_tac_arena/ui_components/form_text_field.dart';
 
@@ -16,19 +18,54 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   List<dynamic> games = [];
+  List<dynamic> users = [];
+
+  String selectedDropdownOptionDisplayedText = 'All';
+  String selectedDropdownOptionValue = '';
+
+  bool loadingGames = false;
+  bool loadingUsers = false;
+
+  TextStyle regularFont = const TextStyle(
+    fontSize: 14.0,
+    fontWeight: FontWeight.normal,
+    color: Colors.black,
+    decoration: TextDecoration.none
+  );
+  TextStyle boldFont = const TextStyle(
+    fontSize: 14.0,
+    fontWeight: FontWeight.bold,
+    color: Colors.black,
+    decoration: TextDecoration.none
+  );
 
   @override
   void initState() {
     super.initState();
-    getInitData();
+    getGamesRef(null);
+    getUsersRef(null);
   }
 
-  void getInitData() async {
-    games = await getGames(Parameters(
+  void getGamesRef(String? directUrl) async {
+    loadingGames = true;
+    setState(() {});
+    games = await getGames(GamesParameters(
       offset: 0,
-      limit: 100
-    ));
-    print("Length: " + games.length.toString());
+      limit: 10,
+      status: selectedDropdownOptionValue
+    ), directUrl);
+    loadingGames = false;
+    setState(() {});
+  }
+
+  void getUsersRef(String? directUrl) async {
+    loadingUsers = true;
+    setState(() {});
+    users = await getUsers(UsersParameters(
+      offset: 0,
+      limit: 10
+    ), directUrl);
+    loadingUsers = false;
     setState(() {});
   }
 
@@ -44,7 +81,7 @@ class _HomePageState extends State<HomePage> {
           leading: null,
           automaticallyImplyLeading: false,
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text('Tic Tac Arena'),
+          title: const Text('Tic Tac Arena'),
           actions: <Widget>[
             Text(loggedInUser != null ? loggedInUser!.username : ''),
             Tooltip(
@@ -62,7 +99,7 @@ class _HomePageState extends State<HomePage> {
                             onPressed: () {
                               Navigator.of(subcontext).pop();
                             },
-                            child: Text('No'),
+                            child: const Text('No'),
                           ),
                           TextButton(
                             onPressed: () async {
@@ -94,7 +131,7 @@ class _HomePageState extends State<HomePage> {
                               );
                               await logout(context);
                             },
-                            child: Text('Yes'),
+                            child: const Text('Yes'),
                           ),
                         ],
                       );
@@ -118,23 +155,301 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        body: TabBarView(
+        body: Column(
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: ListView.builder(
-                itemCount: games.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    title: Text(games[index]['id'].toString()),
-                    onTap: () {
-                      // Handle item tap
-                    },
-                  );
-                },
+            Expanded(
+              child: TabBarView(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  DropdownButton<String>(
+                                    iconSize: 30.0,
+                                    value: selectedDropdownOptionDisplayedText,
+                                    items: gameStatuses.map<DropdownMenuItem<String>>(
+                                      (GameStatus gameStatus) {
+                                        return DropdownMenuItem(
+                                          value: gameStatus.displayedText,
+                                          child: Text(gameStatus.displayedText),
+                                        );
+                                      },
+                                    ).toList(),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        selectedDropdownOptionDisplayedText = value!;
+                                        selectedDropdownOptionValue = gameStatuses.firstWhere((element) => element.displayedText == value).value;
+                                        getGamesRef(null);
+                                      });
+                                    }
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: SizedBox(
+                                      height: 25.0,
+                                      width: 25.0,
+                                      child: loadingGames ? const CircularProgressIndicator() : null,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child: Tooltip(
+                                      message: 'Refresh games',
+                                      child: IconButton(
+                                        onPressed: () async {
+                                          getGamesRef(null);
+                                        },
+                                        style: ButtonStyle(
+                                          backgroundColor: MaterialStateProperty.all(
+                                            Theme.of(context).colorScheme.inversePrimary
+                                          ),
+                                        ),
+                                        icon: const Icon(Icons.refresh)
+                                      ),
+                                    ),
+                                  ),
+                                  Tooltip(
+                                    message: 'New game',
+                                    child: IconButton(
+                                      onPressed: () async {
+                                        
+                                      },
+                                      style: ButtonStyle(
+                                        backgroundColor: MaterialStateProperty.all(
+                                          Theme.of(context).colorScheme.inversePrimary
+                                        ),
+                                      ),
+                                      icon: const Icon(Icons.add)
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Tooltip(
+                                message: 'Previous page' + (gamesPreviousLink != null ? '' : ' (no previous page)'),
+                                child: IconButton(
+                                  onPressed: gamesPreviousLink != null && !loadingGames ? () async {
+                                    getGamesRef(gamesPreviousLink);
+                                  } : null,
+                                  icon: const Icon(Icons.arrow_back)
+                                ),
+                              ),
+                              Expanded(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text.rich(
+                                      TextSpan(
+                                        text: '',
+                                        style: DefaultTextStyle.of(context).style,
+                                        children: <TextSpan>[
+                                          TextSpan(text: 'Showing games ', style: regularFont),
+                                          TextSpan(text: (gameItemsFrom != null ? gameItemsFrom.toString() : ''), style: boldFont),
+                                          TextSpan(text: ' to ', style: regularFont),
+                                          TextSpan(text: (gameItemsTo != null ? gameItemsTo.toString() : ''), style: boldFont),
+                                          TextSpan(text: ' of ', style: regularFont),
+                                          TextSpan(text: (gameCount != null ? gameCount.toString() : ''), style: boldFont)
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Tooltip(
+                                message: 'Next page' + (gamesNextLink != null ? '' : ' (no next page)'),
+                                child: IconButton(
+                                  onPressed: gamesNextLink != null && !loadingGames ? () async {
+                                    getGamesRef(gamesNextLink);
+                                  } : null,
+                                  icon: const Icon(Icons.arrow_forward)
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: games.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return ListTile(
+                                leading: Icon(Icons.videogame_asset),
+                                title: Text(
+                                  games[index]['first_player']['username'] +
+                                  ' vs. ' +
+                                  (games[index]['second_player'] != null ? games[index]['second_player']['username'] : '?')
+                                ),
+                                dense: true,
+                                isThreeLine: true,
+                                subtitle: Text(
+                                  gameStatuses.firstWhere((element) => games[index]['status'] == element.value).displayedText,
+                                  style: TextStyle(
+                                    color: gameStatuses.firstWhere((element) => games[index]['status'] == element.value).statusColor,
+                                  ),
+                                ),
+                                trailing: Text('Game ID: ${games[index]['id']}'),
+                                onTap: () {
+                                  // Handle item tap
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: SizedBox(
+                                  height: 25.0,
+                                  width: 25.0,
+                                  child: loadingUsers ? const CircularProgressIndicator() : null,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: Tooltip(
+                                  message: 'Refresh users',
+                                  child: IconButton(
+                                    onPressed: () async {
+                                      getUsersRef(null);
+                                    },
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateProperty.all(
+                                        Theme.of(context).colorScheme.inversePrimary
+                                      ),
+                                    ),
+                                    icon: const Icon(Icons.refresh)
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Tooltip(
+                                message: 'Previous page' + (usersPreviousLink != null ? '' : ' (no previous page)'),
+                                child: IconButton(
+                                  onPressed: usersPreviousLink != null && !loadingUsers ? () async {
+                                    getUsersRef(usersPreviousLink);
+                                  } : null,
+                                  icon: const Icon(Icons.arrow_back)
+                                ),
+                              ),
+                              Expanded(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text.rich(
+                                      TextSpan(
+                                        text: '',
+                                        style: DefaultTextStyle.of(context).style,
+                                        children: <TextSpan>[
+                                          TextSpan(text: 'Showing users ', style: regularFont),
+                                          TextSpan(text: (userItemsFrom != null ? userItemsFrom.toString() : ''), style: boldFont),
+                                          TextSpan(text: ' to ', style: regularFont),
+                                          TextSpan(text: (userItemsTo != null ? userItemsTo.toString() : ''), style: boldFont),
+                                          TextSpan(text: ' of ', style: regularFont),
+                                          TextSpan(text: (userCount != null ? userCount.toString() : ''), style: boldFont)
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Tooltip(
+                                message: 'Next page' + (usersNextLink != null ? '' : ' (no next page)'),
+                                child: IconButton(
+                                  onPressed: usersNextLink != null && !loadingUsers ? () async {
+                                    getUsersRef(usersNextLink);
+                                  } : null,
+                                  icon: const Icon(Icons.arrow_forward)
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: users.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return ListTile(
+                                leading: const Icon(Icons.person),
+                                title: Text.rich(
+                                  TextSpan(
+                                    text: '',
+                                    style: DefaultTextStyle.of(context).style,
+                                    children: <TextSpan>[
+                                      TextSpan(text: users[index]['username'], style: boldFont),
+                                      TextSpan(text: ' (ID: ' + users[index]['id'].toString() + ')', style: regularFont)
+                                    ],
+                                  ),
+                                ),
+                                dense: true,
+                                isThreeLine: true,
+                                subtitle: Text.rich(
+                                  TextSpan(
+                                    text: '',
+                                    style: DefaultTextStyle.of(context).style,
+                                    children: <TextSpan>[
+                                      TextSpan(text: 'Winrate: ', style: regularFont),
+                                      TextSpan(text: (users[index]['win_rate'] * 100).toStringAsFixed(2) + '%', style: boldFont)
+                                    ],
+                                  ),
+                                ),
+                                trailing: Text.rich(
+                                  TextSpan(
+                                    text: '',
+                                    style: DefaultTextStyle.of(context).style,
+                                    children: <TextSpan>[
+                                      TextSpan(text: 'Total games: ', style: regularFont),
+                                      TextSpan(text: users[index]['game_count'].toString(), style: boldFont)
+                                    ],
+                                  ),
+                                ),
+                                onTap: () {
+                                  // Handle item tap
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            Text('test 2')
           ],
         ),
       ),

@@ -22,23 +22,23 @@ Content-Type: application/json
 
 POST https://tictactoe.aboutdream.io/logout/
 Content-Type: application/json
-Authorization: Bearer d12197b94a5d3cead7a16ae1582697e6b4052a87
+Authorization: Bearer bef0559d9f05149119ca902f9c47cc0ad7963718
 
 // END: Login, Logout and Registration
 
 // START: Authenticated endpoints
 
 ###
-@authToken = "d12197b94a5d3cead7a16ae1582697e6b4052a87"
+@authToken = "bef0559d9f05149119ca902f9c47cc0ad7963718"
 
-GET https://tictactoe.aboutdream.io/games/?offset=0&limit=100
+GET https://tictactoe.aboutdream.io/games/?offset=10&limit=5
 Content-Type: application/json
-Authorization: Bearer d12197b94a5d3cead7a16ae1582697e6b4052a87
+Authorization: Bearer bef0559d9f05149119ca902f9c47cc0ad7963718
 
 ###
 
-GET https://tictactoe.aboutdream.io/users/?limit=100
+GET https://tictactoe.aboutdream.io/users/?limit=10
 Content-Type: application/json
-Authorization: Bearer d12197b94a5d3cead7a16ae1582697e6b4052a87
+Authorization: Bearer bef0559d9f05149119ca902f9c47cc0ad7963718
 
 // END: Authenticated endpoints

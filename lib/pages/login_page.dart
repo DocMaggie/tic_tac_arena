@@ -53,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
                   context: context,
                   builder: (BuildContext loggingOutContext) {
                     return AlertDialog(
-                      title: Row(
+                      title: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Text('Please wait...'),
@@ -69,7 +69,6 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ],
                       ),
-                      actions: <Widget>[],
                     );
                   },
                 );

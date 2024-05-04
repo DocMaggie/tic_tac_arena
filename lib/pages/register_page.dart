@@ -66,7 +66,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   context: context,
                   builder: (BuildContext registeringContext) {
                     return AlertDialog(
-                      title: Row(
+                      title: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Text('Please wait...'),
