@@ -6,12 +6,12 @@ import 'package:tic_tac_arena/models/status.dart';
 class Game {
 
   final int id;
-  final Board board;
-  final ReducedUser winner;
-  final ReducedUser firstPlayer;
-  final ReducedUser secondPlayer;
+  final dynamic board;
+  final ReducedUser? winner;
+  final ReducedUser? firstPlayer;
+  final ReducedUser? secondPlayer;
   final DateTime created;
-  final Status status;
+  final String status;
 
   const Game({
     required this.id,

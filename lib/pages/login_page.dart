@@ -48,6 +48,31 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 25.0),
             ElevatedButton(
               onPressed: () async {
+                showDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (BuildContext loggingOutContext) {
+                    return AlertDialog(
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text('Please wait...'),
+                        ]
+                      ),
+                      content: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            width: 50.0,
+                            height: 50.0,
+                            child: CircularProgressIndicator(),
+                          ),
+                        ],
+                      ),
+                      actions: <Widget>[],
+                    );
+                  },
+                );
                 authToken = await login(
                   context,
                   LoginInput(
@@ -57,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
                 );
                 print('Evo: $authToken');
                 if (authToken != null) {
-                  Navigator.of(context).pushReplacementNamed('/games');
+                  Navigator.of(context).pushReplacementNamed('/home');
                 }
               },
               style: ButtonStyle(

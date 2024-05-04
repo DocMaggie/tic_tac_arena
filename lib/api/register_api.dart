@@ -5,10 +5,10 @@ import 'package:tic_tac_arena/models/register_input.dart';
 
 Future<String?> register(BuildContext context, RegisterInput registerInput) async {
 
-  SnackBar successSnackBar = SnackBar(
+  SnackBar successSnackBar = const SnackBar(
     content: Text('Successfully registered! You can start playing now.'),
   );
-  SnackBar errorSnackBar = SnackBar(
+  SnackBar errorSnackBar = const SnackBar(
     content: Text('Error while trying to register.'),
   );
 
@@ -25,12 +25,12 @@ Future<String?> register(BuildContext context, RegisterInput registerInput) asyn
 
   final response = await http.post(uri, headers: h, body: jsonBody);
   
-  print(response.statusCode);
   if (response.statusCode == 200) {
     ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
     Navigator.of(context).pushReplacementNamed('/login');
   } else {
     ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+    Navigator.of(context).pop();
     throw Exception('Failed to register');
   }
 }

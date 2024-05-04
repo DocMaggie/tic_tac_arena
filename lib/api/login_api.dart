@@ -31,6 +31,7 @@ Future<String> login(BuildContext context, LoginInput loginInput) async {
     return jsonData['token'];
   } else {
     ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+    Navigator.of(context).pop();
     throw Exception('Failed to login');
   }
 }

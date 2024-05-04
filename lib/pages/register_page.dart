@@ -61,6 +61,31 @@ class _RegisterPageState extends State<RegisterPage> {
             const SizedBox(height: 25.0),
             ElevatedButton(
               onPressed: () async {
+                showDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (BuildContext registeringContext) {
+                    return AlertDialog(
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text('Please wait...'),
+                        ]
+                      ),
+                      content: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            width: 50.0,
+                            height: 50.0,
+                            child: CircularProgressIndicator(),
+                          ),
+                        ],
+                      ),
+                      actions: <Widget>[],
+                    );
+                  },
+                );
                 if (passwordController.text == repeatPasswordController.text) {
                   register(
                     context,
