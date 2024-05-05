@@ -223,7 +223,7 @@ class _HomePageState extends State<HomePage> {
                                     message: 'New game',
                                     child: IconButton(
                                       onPressed: () async {
-                                        
+                                        Navigator.of(context).pushReplacementNamed('/game');
                                       },
                                       style: ButtonStyle(
                                         backgroundColor: MaterialStateProperty.all(
@@ -306,7 +306,8 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 trailing: Text('Game ID: ${games[index]['id']}'),
                                 onTap: () {
-                                  // Handle item tap
+                                  viewedGame = Game.fromJson(games[index]);
+                                  Navigator.of(context).pushReplacementNamed('/game');
                                 },
                               );
                             },

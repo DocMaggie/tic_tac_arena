@@ -7,9 +7,9 @@ class Board {
     required this.values
   });
 
-  factory Board.fromJson(Map<String, dynamic> json) {
+  factory Board.fromJson(List<List<int?>> json) {
     return Board(
-      values: json['board']
+      values: json
     );
   }
 

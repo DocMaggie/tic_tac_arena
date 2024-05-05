@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tic_tac_arena/pages/game_page.dart';
 import 'package:tic_tac_arena/pages/home_page.dart';
 import 'package:tic_tac_arena/pages/login_page.dart';
 import 'package:tic_tac_arena/pages/register_page.dart';
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
         '/home': (context) => const HomePage(),
+        '/game': (context) => const GamePage(),
       },
     );
   }

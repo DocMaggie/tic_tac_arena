@@ -41,4 +41,10 @@ GET https://tictactoe.aboutdream.io/users/?limit=10
 Content-Type: application/json
 Authorization: Bearer bef0559d9f05149119ca902f9c47cc0ad7963718
 
+###
+
+GET https://tictactoe.aboutdream.io/users/359/
+Content-Type: application/json
+Authorization: Bearer bef0559d9f05149119ca902f9c47cc0ad7963718
+
 // END: Authenticated endpoints

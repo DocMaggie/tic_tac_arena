@@ -8,4 +8,11 @@ class ReducedUser {
     required this.username
   });
 
+  factory ReducedUser.fromJson(Map<String, dynamic> json) {
+    return ReducedUser(
+      id: json['id'],
+      username: json['username']
+    );
+  }
+
 }

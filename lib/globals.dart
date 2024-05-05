@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:tic_tac_arena/models/board.dart';
+import 'package:tic_tac_arena/models/game.dart';
 import 'package:tic_tac_arena/models/game_status.dart';
+import 'package:tic_tac_arena/models/reduced_user.dart';
 import 'package:tic_tac_arena/models/user.dart';
 
 String? authToken;
@@ -9,6 +12,42 @@ String? gamesPreviousLink;
 
 String? usersNextLink;
 String? usersPreviousLink;
+
+Game? viewedGame = Game(
+      id: 1930,
+      board: Board(
+        values: [
+          [
+            null,
+            383,
+            null
+          ],
+          [
+            null,
+            null,
+            381
+          ],
+          [
+            null,
+            null,
+            null
+          ]
+        ]
+      ),
+      winner: null,
+      firstPlayer: ReducedUser(
+        id: 383,
+        username: "ccc"
+      ),
+      secondPlayer: ReducedUser(
+        id: 381,
+        username: "aaa"
+      ),
+      created: DateTime.parse("2024-05-03T19:08:44.550887Z"),
+      status: "progress"
+    );
+User? firstPlayer;
+User? secondPlayer;
 
 int? gameCount;
 int? gameItemsFrom;

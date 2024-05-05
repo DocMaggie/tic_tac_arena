@@ -79,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                     password: passwordController.text
                   )
                 );
-                print('Evo: $authToken');
+                //print('Evo: $authToken');
                 if (authToken != null) {
                   Navigator.of(context).pushReplacementNamed('/home');
                 }
