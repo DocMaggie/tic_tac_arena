@@ -19,6 +19,8 @@ Future<Map<String, dynamic>> getGameById(int id) async {
 
   if (response.statusCode == 200) {
     final jsonData = jsonDecode(response.body);
+    viewedGame = Game.fromJson(jsonData);
+    print('jsonData: ' + response.body);
     return jsonData;
   } else {
     throw Exception('Failed to get the game by Id');

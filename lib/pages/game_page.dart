@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:tic_tac_arena/api/get_game_by_id_api.dart';
 import 'package:tic_tac_arena/api/login_api.dart';
 import 'package:tic_tac_arena/api/make_move_api.dart';
 import 'package:tic_tac_arena/globals.dart';
+import 'package:tic_tac_arena/models/game.dart';
 import 'package:tic_tac_arena/models/login_input.dart';
 import 'package:tic_tac_arena/ui_components/form_button.dart';
 import 'package:tic_tac_arena/ui_components/form_title.dart';
@@ -24,15 +27,30 @@ class _GamePageState extends State<GamePage> {
   String cross = 'lib/assets/images/svg/cross.svg';
   int? whosTurnIsItId;
   int totalCounter = 0;
+  late Timer timer;
+
+  getCurrentGameState(Timer timer) async {
+    await getGameById(viewedGame!.id);
+    setState(() {});
+  }
 
   @override
   void initState() {
     super.initState();
     calcWhosTurnIsIt();
+    timer = Timer.periodic(
+      Duration(seconds: 3),
+      getCurrentGameState
+    );
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
   }
 
   void calcWhosTurnIsIt() {
-    print('whosTurnIsItId');
     if (viewedGame!.secondPlayer != null && viewedGame!.winner == null) {
       int firstPlayerCounter = 0;
       int secondPlayerCounter = 0;
@@ -53,8 +71,6 @@ class _GamePageState extends State<GamePage> {
       } else {
         whosTurnIsItId = viewedGame!.secondPlayer!.id;
       }
-      print('firstPlayer: ${firstPlayerCounter}');
-      print('secondPlayer: ${secondPlayerCounter}');
     }
   }
 
@@ -82,6 +98,8 @@ class _GamePageState extends State<GamePage> {
 
     Size size = MediaQuery.of(context).size;
     double boardSize = min(size.height, size.width) * 0.7;
+    Move? tappedField;
+
     
     Widget circleWidget = Padding(
       padding: EdgeInsets.all(boardSize * 0.0),
@@ -113,14 +131,19 @@ class _GamePageState extends State<GamePage> {
           }
         }
       }
-      return null;
+      if (id == null) {
+        return null/*Padding(
+          padding: EdgeInsets.all(10.0),
+          child: CircularProgressIndicator(),
+        )*/;
+      }
     }
-    void makeMoveCheck(Move move) {
+    Future<void> makeMoveCheck(Move move) async {
       if (viewedGame != null) {
         if (viewedGame!.secondPlayer != null &&
             viewedGame!.board.values[move.row][move.column] == null &&
             loggedInUser!.id == whosTurnIsItId) {
-          makeMove(loggedInUser!.id, move);
+          await makeMove(viewedGame!.id, move);
         }
       }
     }
@@ -153,6 +176,10 @@ class _GamePageState extends State<GamePage> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              ElevatedButton(onPressed: () {
+                print(viewedGame!.board.values);
+                setState(() {});
+              }, child: Text('test')),
               Container(
                 color: Colors.black,
                 height: boardSize,
@@ -164,8 +191,11 @@ class _GamePageState extends State<GamePage> {
                   crossAxisCount: 3,
                   children: <Widget>[
                     GestureDetector(
-                      onTap: () {
-                        makeMoveCheck(const Move(row: 0, column: 0));
+                      onTap: () async {
+                        await makeMoveCheck(const Move(row: 0, column: 0));
+                        await getGameById(viewedGame!.id);
+                        calcWhosTurnIsIt();
+                        setState(() {});
                       },
                       child: Container(
                         padding: EdgeInsets.all(boardSize * 0.02),
@@ -174,8 +204,11 @@ class _GamePageState extends State<GamePage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {
-                        makeMoveCheck(const Move(row: 0, column: 1));
+                      onTap: () async {
+                        await makeMoveCheck(const Move(row: 0, column: 1));
+                        await getGameById(viewedGame!.id);
+                        calcWhosTurnIsIt();
+                        setState(() {});
                       },
                       child: Container(
                         padding: EdgeInsets.all(boardSize * 0.02),
@@ -184,8 +217,11 @@ class _GamePageState extends State<GamePage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {
-                        makeMoveCheck(const Move(row: 0, column: 2));
+                      onTap: () async {
+                        await makeMoveCheck(const Move(row: 0, column: 2));
+                        await getGameById(viewedGame!.id);
+                        calcWhosTurnIsIt();
+                        setState(() {});
                       },
                       child: Container(
                         padding: EdgeInsets.all(boardSize * 0.02),
@@ -194,8 +230,11 @@ class _GamePageState extends State<GamePage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {
-                        makeMoveCheck(const Move(row: 1, column: 0));
+                      onTap: () async {
+                        await makeMoveCheck(const Move(row: 1, column: 0));
+                        await getGameById(viewedGame!.id);
+                        calcWhosTurnIsIt();
+                        setState(() {});
                       },
                       child: Container(
                         padding: EdgeInsets.all(boardSize * 0.02),
@@ -204,8 +243,11 @@ class _GamePageState extends State<GamePage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {
-                        makeMoveCheck(const Move(row: 1, column: 1));
+                      onTap: () async {
+                        await makeMoveCheck(const Move(row: 1, column: 1));
+                        await getGameById(viewedGame!.id);
+                        calcWhosTurnIsIt();
+                        setState(() {});
                       },
                       child: Container(
                         padding: EdgeInsets.all(boardSize * 0.02),
@@ -214,8 +256,11 @@ class _GamePageState extends State<GamePage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {
-                        makeMoveCheck(const Move(row: 1, column: 2));
+                      onTap: () async {
+                        await makeMoveCheck(const Move(row: 1, column: 2));
+                        await getGameById(viewedGame!.id);
+                        calcWhosTurnIsIt();
+                        setState(() {});
                       },
                       child: Container(
                         padding: EdgeInsets.all(boardSize * 0.02),
@@ -224,8 +269,11 @@ class _GamePageState extends State<GamePage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {
-                        makeMoveCheck(const Move(row: 2, column: 0));
+                      onTap: () async {
+                        await makeMoveCheck(const Move(row: 2, column: 0));
+                        await getGameById(viewedGame!.id);
+                        calcWhosTurnIsIt();
+                        setState(() {});
                       },
                       child: Container(
                         padding: EdgeInsets.all(boardSize * 0.02),
@@ -234,8 +282,11 @@ class _GamePageState extends State<GamePage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {
-                        makeMoveCheck(const Move(row: 2, column: 1));
+                      onTap: () async {
+                        await makeMoveCheck(const Move(row: 2, column: 1));
+                        await getGameById(viewedGame!.id);
+                        calcWhosTurnIsIt();
+                        setState(() {});
                       },
                       child: Container(
                         padding: EdgeInsets.all(boardSize * 0.02),
@@ -244,8 +295,11 @@ class _GamePageState extends State<GamePage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {
-                        makeMoveCheck(const Move(row: 2, column: 2));
+                      onTap: () async {
+                        await makeMoveCheck(const Move(row: 2, column: 2));
+                        await getGameById(viewedGame!.id);
+                        calcWhosTurnIsIt();
+                        setState(() {});
                       },
                       child: Container(
                         padding: EdgeInsets.all(boardSize * 0.02),

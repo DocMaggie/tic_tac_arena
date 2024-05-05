@@ -376,8 +376,7 @@ class _HomePageState extends State<HomePage> {
                                               onPressed: () async {
                                                 joinGame(games[index]['id']);
                                                 getGameById(games[index]['id']);
-                                                Game joinedGame = Game.fromJson(await getGameById(games[index]['id']));
-                                                viewedGame = joinedGame;
+                                                viewedGame = Game.fromJson(await getGameById(games[index]['id']));
                                                 Navigator.of(context).pushReplacementNamed('/game');
                                               },
                                               child: const Text('Yes'),
