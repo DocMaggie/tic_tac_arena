@@ -57,7 +57,7 @@ int? userCount;
 int? userItemsFrom;
 int? userItemsTo;
 
-User? loggedInUser;
+ReducedUser? loggedInUser;
 List<GameStatus> gameStatuses = [
   const GameStatus(
     id: 1,

@@ -31,9 +31,38 @@ Authorization: Bearer bef0559d9f05149119ca902f9c47cc0ad7963718
 ###
 @authToken = "bef0559d9f05149119ca902f9c47cc0ad7963718"
 
-GET https://tictactoe.aboutdream.io/games/?offset=10&limit=5
+GET https://tictactoe.aboutdream.io/games/1931/
 Content-Type: application/json
 Authorization: Bearer bef0559d9f05149119ca902f9c47cc0ad7963718
+
+###
+
+POST https://tictactoe.aboutdream.io/games/
+Content-Type: application/json
+Authorization: Bearer bef0559d9f05149119ca902f9c47cc0ad7963718
+
+{
+  "id": 0,
+  "board": [
+    [
+      0
+    ]
+  ],
+  "winner": {
+    "id": 0,
+    "username": "string"
+  },
+  "first_player": {
+    "id": 0,
+    "username": "string"
+  },
+  "second_player": {
+    "id": 0,
+    "username": "string"
+  },
+  "created": "2024-05-05T19:48:24.875Z",
+  "status": "open"
+}
 
 ###
 

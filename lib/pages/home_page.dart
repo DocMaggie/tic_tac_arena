@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:tic_tac_arena/api/create_new_game_api.dart';
+import 'package:tic_tac_arena/api/get_game_by_id_api.dart';
 import 'package:tic_tac_arena/api/get_games_api.dart';
 import 'package:tic_tac_arena/api/get_users_api.dart';
+import 'package:tic_tac_arena/api/join_game_api.dart';
 import 'package:tic_tac_arena/api/logout_api.dart';
 import 'package:tic_tac_arena/globals.dart';
 import 'package:tic_tac_arena/models/game.dart';
@@ -223,7 +226,56 @@ class _HomePageState extends State<HomePage> {
                                     message: 'New game',
                                     child: IconButton(
                                       onPressed: () async {
-                                        Navigator.of(context).pushReplacementNamed('/game');
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext subcontext) {
+                                            return AlertDialog(
+                                              title: const Text('New game'),
+                                              content: const Text('Would you like to create a new lobby?'),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(subcontext).pop();
+                                                  },
+                                                  child: const Text('No'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () async {
+                                                    Navigator.of(subcontext).pop();
+                                                    showDialog(
+                                                      barrierDismissible: false,
+                                                      context: context,
+                                                      builder: (BuildContext loggingOutContext) {
+                                                        return const AlertDialog(
+                                                          title: Row(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: <Widget>[
+                                                              Text('Creating new lobby...'),
+                                                            ]
+                                                          ),
+                                                          content: Row(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: <Widget>[
+                                                              SizedBox(
+                                                                width: 50.0,
+                                                                height: 50.0,
+                                                                child: CircularProgressIndicator(),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          actions: <Widget>[],
+                                                        );
+                                                      },
+                                                    );
+                                                    viewedGame = Game.fromJson(await createNewGame());
+                                                    Navigator.of(context).pushReplacementNamed('/game');
+                                                  },
+                                                  child: const Text('Yes'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
                                       },
                                       style: ButtonStyle(
                                         backgroundColor: MaterialStateProperty.all(
@@ -306,8 +358,38 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 trailing: Text('Game ID: ${games[index]['id']}'),
                                 onTap: () {
-                                  viewedGame = Game.fromJson(games[index]);
-                                  Navigator.of(context).pushReplacementNamed('/game');
+                                  if (games[index]['status'] == 'open' && games[index]['first_player']['id'] != loggedInUser!.id) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext subcontext) {
+                                        return AlertDialog(
+                                          title: const Text('Confirmation'),
+                                          content: const Text('Would you like to join as second player?'),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(subcontext).pop();
+                                              },
+                                              child: const Text('No'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () async {
+                                                joinGame(games[index]['id']);
+                                                getGameById(games[index]['id']);
+                                                Game joinedGame = Game.fromJson(await getGameById(games[index]['id']));
+                                                viewedGame = joinedGame;
+                                                Navigator.of(context).pushReplacementNamed('/game');
+                                              },
+                                              child: const Text('Yes'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  } else {
+                                    viewedGame = Game.fromJson(games[index]);
+                                    Navigator.of(context).pushReplacementNamed('/game');
+                                  }
                                 },
                               );
                             },
