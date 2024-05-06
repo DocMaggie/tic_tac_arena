@@ -64,6 +64,14 @@ flutter:
   assets:
   - lib/assets/images/svg/circle.svg
   - lib/assets/images/svg/cross.svg
+  - lib/assets/images/svg/horizontal-top.svg
+  - lib/assets/images/svg/horizontal-middle.svg
+  - lib/assets/images/svg/horizontal-bottom.svg
+  - lib/assets/images/svg/vertical-left.svg
+  - lib/assets/images/svg/vertical-middle.svg
+  - lib/assets/images/svg/vertical-right.svg
+  - lib/assets/images/svg/diagonal-rising.svg
+  - lib/assets/images/svg/diagonal-falling.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

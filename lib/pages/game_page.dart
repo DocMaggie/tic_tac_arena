@@ -25,12 +25,22 @@ class _GamePageState extends State<GamePage> {
 
   String circle = 'lib/assets/images/svg/circle.svg';
   String cross = 'lib/assets/images/svg/cross.svg';
+  String horizontalTop = 'lib/assets/images/svg/horizontal-top.svg';
+  String horizontalMiddle = 'lib/assets/images/svg/horizontal-middle.svg';
+  String horizontalBottom = 'lib/assets/images/svg/horizontal-bottom.svg';
+  String verticalLeft = 'lib/assets/images/svg/vertical-left.svg';
+  String verticalMiddle = 'lib/assets/images/svg/vertical-middle.svg';
+  String verticalRight = 'lib/assets/images/svg/vertical-right.svg';
+  String diagonalRising = 'lib/assets/images/svg/diagonal-rising.svg';
+  String diagonalFalling = 'lib/assets/images/svg/diagonal-falling.svg';
   int? whosTurnIsItId;
   int totalCounter = 0;
+  Move? tappedField;
   late Timer timer;
 
   getCurrentGameState(Timer timer) async {
     await getGameById(viewedGame!.id);
+    calcWhosTurnIsIt();
     setState(() {});
   }
 
@@ -78,7 +88,7 @@ class _GamePageState extends State<GamePage> {
     String returnValue = '';
     if (viewedGame!.winner == null) {
       if (viewedGame!.secondPlayer == null) {
-        return 'Waiting for the\nsecond player...';
+        return 'Waiting for a\nsecond player...';
       }
       if (totalCounter < 9) {
         return 'Turn';
@@ -93,12 +103,55 @@ class _GamePageState extends State<GamePage> {
     return returnValue;
   }
 
+  String getWinningLine() {
+    if (viewedGame!.board.values[0][0] != null &&
+        viewedGame!.board.values[0][0] == viewedGame!.board.values[0][1] &&
+        viewedGame!.board.values[0][1] == viewedGame!.board.values[0][2]) {
+      return horizontalTop;
+    }
+    if (viewedGame!.board.values[1][0] != null &&
+        viewedGame!.board.values[1][0] == viewedGame!.board.values[1][1] &&
+        viewedGame!.board.values[1][1] == viewedGame!.board.values[1][2]) {
+      return horizontalMiddle;
+    }
+    if (viewedGame!.board.values[2][0] != null &&
+        viewedGame!.board.values[2][0] == viewedGame!.board.values[2][1] &&
+        viewedGame!.board.values[2][1] == viewedGame!.board.values[2][2]) {
+      return horizontalBottom;
+    }
+    if (viewedGame!.board.values[0][0] != null &&
+        viewedGame!.board.values[0][0] == viewedGame!.board.values[1][0] &&
+        viewedGame!.board.values[1][0] == viewedGame!.board.values[2][0]) {
+      return verticalLeft;
+    }
+    if (viewedGame!.board.values[0][1] != null &&
+        viewedGame!.board.values[0][1] == viewedGame!.board.values[1][1] &&
+        viewedGame!.board.values[1][1] == viewedGame!.board.values[2][1]) {
+      return verticalMiddle;
+    }
+    if (viewedGame!.board.values[0][2] != null &&
+        viewedGame!.board.values[0][2] == viewedGame!.board.values[1][2] &&
+        viewedGame!.board.values[1][2] == viewedGame!.board.values[2][2]) {
+      return verticalRight;
+    }
+    if (viewedGame!.board.values[0][0] != null &&
+        viewedGame!.board.values[0][0] == viewedGame!.board.values[1][1] &&
+        viewedGame!.board.values[1][1] == viewedGame!.board.values[2][2]) {
+      return diagonalFalling;
+    }
+    if (viewedGame!.board.values[2][0] != null &&
+        viewedGame!.board.values[2][0] == viewedGame!.board.values[1][1] &&
+        viewedGame!.board.values[1][1] == viewedGame!.board.values[0][2]) {
+      return diagonalRising;
+    }
+    return horizontalTop;
+  }
+
   @override
   Widget build(BuildContext context) {
 
     Size size = MediaQuery.of(context).size;
     double boardSize = min(size.height, size.width) * 0.7;
-    Move? tappedField;
 
     
     Widget circleWidget = Padding(
@@ -118,7 +171,7 @@ class _GamePageState extends State<GamePage> {
       ),
     );
 
-    Widget? getWidget(int? id) {
+    Widget? getWidget(int? id, int row, int column) {
       if (viewedGame != null) {
         if (viewedGame!.firstPlayer != null) {
           if (id == viewedGame!.firstPlayer!.id) {
@@ -131,19 +184,66 @@ class _GamePageState extends State<GamePage> {
           }
         }
       }
-      if (id == null) {
-        return null/*Padding(
+      if (row == tappedField?.row && column == tappedField?.column) {
+        return const Padding(
           padding: EdgeInsets.all(10.0),
           child: CircularProgressIndicator(),
-        )*/;
+        );
       }
+      return null;
     }
+
     Future<void> makeMoveCheck(Move move) async {
+
       if (viewedGame != null) {
         if (viewedGame!.secondPlayer != null &&
             viewedGame!.board.values[move.row][move.column] == null &&
-            loggedInUser!.id == whosTurnIsItId) {
+            loggedInUser!.id == whosTurnIsItId &&
+            viewedGame!.winner == null) {
+          tappedField = move;
+          setState(() {});
           await makeMove(viewedGame!.id, move);
+        }
+      }
+    }
+
+    Future<void> makeRandomMove() async {
+
+      if (viewedGame != null) {
+        if (viewedGame!.secondPlayer != null &&
+            loggedInUser!.id == whosTurnIsItId &&
+            viewedGame!.winner == null) {
+          int nullCounter = 0;
+          for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+              if (viewedGame!.board.values[i][j] == null) {
+                nullCounter++;
+              }
+            }
+          }
+          if (nullCounter > 0) {
+            Random random = Random();
+            int randomField = random.nextInt(nullCounter) + 1;
+            nullCounter = 0;
+            bool isGenerated = false;
+            for (int i = 0; i < 3; i++) {
+              if (!isGenerated) {
+                for (int j = 0; j < 3; j++) {
+                  if (viewedGame!.board.values[i][j] == null) {
+                    nullCounter++;
+                    if (nullCounter == randomField) {
+                      isGenerated = true;
+                      await makeMoveCheck(Move(row: i, column: j));
+                      await getGameById(viewedGame!.id);
+                      calcWhosTurnIsIt();
+                      setState(() {});
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -167,7 +267,7 @@ class _GamePageState extends State<GamePage> {
                 icon: Icon(Icons.arrow_back)
               ),
             ),
-          )
+          ),
         ],
       ),
       body: ListView(
@@ -176,165 +276,207 @@ class _GamePageState extends State<GamePage> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              ElevatedButton(onPressed: () {
-                print(viewedGame!.board.values);
-                setState(() {});
-              }, child: Text('test')),
-              Container(
-                color: Colors.black,
-                height: boardSize,
-                width: boardSize,
-                child: GridView.count(
-                  primary: false,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  crossAxisCount: 3,
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () async {
-                        await makeMoveCheck(const Move(row: 0, column: 0));
-                        await getGameById(viewedGame!.id);
-                        calcWhosTurnIsIt();
-                        setState(() {});
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(boardSize * 0.02),
-                        color: Theme.of(context).colorScheme.background,
-                        child: getWidget(viewedGame?.board.values[0][0])
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        await makeMoveCheck(const Move(row: 0, column: 1));
-                        await getGameById(viewedGame!.id);
-                        calcWhosTurnIsIt();
-                        setState(() {});
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(boardSize * 0.02),
-                        color: Theme.of(context).colorScheme.background,
-                        child: getWidget(viewedGame?.board.values[0][1])
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        await makeMoveCheck(const Move(row: 0, column: 2));
-                        await getGameById(viewedGame!.id);
-                        calcWhosTurnIsIt();
-                        setState(() {});
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(boardSize * 0.02),
-                        color: Theme.of(context).colorScheme.background,
-                        child: getWidget(viewedGame?.board.values[0][2])
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        await makeMoveCheck(const Move(row: 1, column: 0));
-                        await getGameById(viewedGame!.id);
-                        calcWhosTurnIsIt();
-                        setState(() {});
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(boardSize * 0.02),
-                        color: Theme.of(context).colorScheme.background,
-                        child: getWidget(viewedGame?.board.values[1][0])
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        await makeMoveCheck(const Move(row: 1, column: 1));
-                        await getGameById(viewedGame!.id);
-                        calcWhosTurnIsIt();
-                        setState(() {});
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(boardSize * 0.02),
-                        color: Theme.of(context).colorScheme.background,
-                        child: getWidget(viewedGame?.board.values[1][1])
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        await makeMoveCheck(const Move(row: 1, column: 2));
-                        await getGameById(viewedGame!.id);
-                        calcWhosTurnIsIt();
-                        setState(() {});
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(boardSize * 0.02),
-                        color: Theme.of(context).colorScheme.background,
-                        child: getWidget(viewedGame?.board.values[1][2])
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        await makeMoveCheck(const Move(row: 2, column: 0));
-                        await getGameById(viewedGame!.id);
-                        calcWhosTurnIsIt();
-                        setState(() {});
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(boardSize * 0.02),
-                        color: Theme.of(context).colorScheme.background,
-                        child: getWidget(viewedGame?.board.values[2][0])
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        await makeMoveCheck(const Move(row: 2, column: 1));
-                        await getGameById(viewedGame!.id);
-                        calcWhosTurnIsIt();
-                        setState(() {});
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(boardSize * 0.02),
-                        color: Theme.of(context).colorScheme.background,
-                        child: getWidget(viewedGame?.board.values[2][1])
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        await makeMoveCheck(const Move(row: 2, column: 2));
-                        await getGameById(viewedGame!.id);
-                        calcWhosTurnIsIt();
-                        setState(() {});
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(boardSize * 0.02),
-                        color: Theme.of(context).colorScheme.background,
-                        child: getWidget(viewedGame?.board.values[2][2])
-                      ),
-                    )
-                  ],
+              if ((viewedGame!.firstPlayer!.id == loggedInUser!.id ||
+                  viewedGame!.secondPlayer?.id == loggedInUser!.id) &&
+                  viewedGame!.winner == null) Tooltip(
+                message: whosTurnIsItId == loggedInUser!.id ?
+                         'In case you\'re uncertain about your next move, or you just don\'t care too much about the outcome'
+                         :
+                         'Please wait for your turn...',
+                child: ElevatedButton(
+                  onPressed: whosTurnIsItId == loggedInUser!.id ? () {
+                    makeRandomMove();
+                  } : null,
+                  child: Text('Make a Random Move')
                 ),
+              ),
+              const SizedBox(height: 20.0),
+              Stack(
+                children: <Widget>[
+                  Container(
+                    color: Colors.black,
+                    height: boardSize,
+                    width: boardSize,
+                    child: GridView.count(
+                      primary: false,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      crossAxisCount: 3,
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () async {
+                            await makeMoveCheck(const Move(row: 0, column: 0));
+                            await getGameById(viewedGame!.id);
+                            calcWhosTurnIsIt();
+                            setState(() {});
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(boardSize * 0.02),
+                            color: Theme.of(context).colorScheme.background,
+                            child: getWidget(viewedGame?.board.values[0][0], 0, 0)
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            await makeMoveCheck(const Move(row: 0, column: 1));
+                            await getGameById(viewedGame!.id);
+                            calcWhosTurnIsIt();
+                            setState(() {});
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(boardSize * 0.02),
+                            color: Theme.of(context).colorScheme.background,
+                            child: getWidget(viewedGame?.board.values[0][1], 0, 1)
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            await makeMoveCheck(const Move(row: 0, column: 2));
+                            await getGameById(viewedGame!.id);
+                            calcWhosTurnIsIt();
+                            setState(() {});
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(boardSize * 0.02),
+                            color: Theme.of(context).colorScheme.background,
+                            child: getWidget(viewedGame?.board.values[0][2], 0, 2)
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            await makeMoveCheck(const Move(row: 1, column: 0));
+                            await getGameById(viewedGame!.id);
+                            calcWhosTurnIsIt();
+                            setState(() {});
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(boardSize * 0.02),
+                            color: Theme.of(context).colorScheme.background,
+                            child: getWidget(viewedGame?.board.values[1][0], 1, 0)
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            await makeMoveCheck(const Move(row: 1, column: 1));
+                            await getGameById(viewedGame!.id);
+                            calcWhosTurnIsIt();
+                            setState(() {});
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(boardSize * 0.02),
+                            color: Theme.of(context).colorScheme.background,
+                            child: getWidget(viewedGame?.board.values[1][1], 1, 1)
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            await makeMoveCheck(const Move(row: 1, column: 2));
+                            await getGameById(viewedGame!.id);
+                            calcWhosTurnIsIt();
+                            setState(() {});
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(boardSize * 0.02),
+                            color: Theme.of(context).colorScheme.background,
+                            child: getWidget(viewedGame?.board.values[1][2], 1, 2)
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            await makeMoveCheck(const Move(row: 2, column: 0));
+                            await getGameById(viewedGame!.id);
+                            calcWhosTurnIsIt();
+                            setState(() {});
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(boardSize * 0.02),
+                            color: Theme.of(context).colorScheme.background,
+                            child: getWidget(viewedGame?.board.values[2][0], 2, 0)
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            await makeMoveCheck(const Move(row: 2, column: 1));
+                            await getGameById(viewedGame!.id);
+                            calcWhosTurnIsIt();
+                            setState(() {});
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(boardSize * 0.02),
+                            color: Theme.of(context).colorScheme.background,
+                            child: getWidget(viewedGame?.board.values[2][1], 2, 1)
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            await makeMoveCheck(const Move(row: 2, column: 2));
+                            await getGameById(viewedGame!.id);
+                            calcWhosTurnIsIt();
+                            setState(() {});
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(boardSize * 0.02),
+                            color: Theme.of(context).colorScheme.background,
+                            child: getWidget(viewedGame?.board.values[2][2], 2, 2)
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  if (viewedGame!.winner != null) SvgPicture.asset(
+                    getWinningLine(),
+                    height: boardSize,
+                    width: boardSize,
+                  ),
+                ],
               ),
               SizedBox(height: 20.0),
               Padding(
                 padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
                   children: <Widget>[
-                    Column(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text('First player (X)'),
-                        Text(
-                          viewedGame!.firstPlayer!.username,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Column(
+                          children: <Widget>[
+                            Text('First Player (X)'),
+                            Text(
+                              viewedGame!.firstPlayer!.username,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'ID: ${viewedGame!.firstPlayer!.id}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ]
                         ),
-                        Text(
-                          'ID: ${viewedGame!.firstPlayer!.id}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Column(
+                          children: <Widget>[
+                            Text('Second Player (O)'),
+                            Text(
+                              viewedGame!.secondPlayer != null ? viewedGame!.secondPlayer!.username : '?',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            if (viewedGame!.secondPlayer != null) Text(
+                              'ID: ${viewedGame!.secondPlayer!.id}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ]
                         ),
-                      ]
+                      ],
                     ),
                     Container(
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           whosTurnIsItId == viewedGame!.firstPlayer!.id && viewedGame!.winner == null ? Icon(Icons.arrow_back) : Container(),
                           Text(
@@ -344,23 +486,6 @@ class _GamePageState extends State<GamePage> {
                             whosTurnIsItId == viewedGame!.secondPlayer!.id && viewedGame!.winner == null ? Icon(Icons.arrow_forward) : Container()
                         ],
                       ),
-                    ),
-                    Column(
-                      children: <Widget>[
-                        Text('Second player (O)'),
-                        Text(
-                          viewedGame!.secondPlayer != null ? viewedGame!.secondPlayer!.username : '?',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        if (viewedGame!.secondPlayer != null) Text(
-                          'ID: ${viewedGame!.secondPlayer!.id}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ]
                     ),
                   ],
                 ),

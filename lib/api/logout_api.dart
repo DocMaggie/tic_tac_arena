@@ -21,7 +21,7 @@ Future<String?> logout(BuildContext context) async {
   
   if (response.statusCode == 200) {
     ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
-    Navigator.of(context).pushReplacementNamed('/login');
+    Navigator.of(context).pushNamed('/login');
   } else {
     ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
     Navigator.of(context).pop();

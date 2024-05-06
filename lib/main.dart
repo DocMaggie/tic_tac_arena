@@ -3,6 +3,7 @@ import 'package:tic_tac_arena/pages/game_page.dart';
 import 'package:tic_tac_arena/pages/home_page.dart';
 import 'package:tic_tac_arena/pages/login_page.dart';
 import 'package:tic_tac_arena/pages/register_page.dart';
+import 'package:tic_tac_arena/pages/user_details_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,6 +29,8 @@ class MyApp extends StatelessWidget {
         '/register': (context) => const RegisterPage(),
         '/home': (context) => const HomePage(),
         '/game': (context) => const GamePage(),
+        UserDetailsPage.routeName: (context) =>
+        const UserDetailsPage(),
       },
     );
   }

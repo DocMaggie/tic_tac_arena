@@ -8,6 +8,8 @@ import 'package:tic_tac_arena/api/logout_api.dart';
 import 'package:tic_tac_arena/globals.dart';
 import 'package:tic_tac_arena/models/game.dart';
 import 'package:tic_tac_arena/models/game_status.dart';
+import 'package:tic_tac_arena/models/user.dart';
+import 'package:tic_tac_arena/pages/user_details_page.dart';
 import 'package:tic_tac_arena/ui_components/form_title.dart';
 import 'package:tic_tac_arena/ui_components/form_text_field.dart';
 
@@ -268,7 +270,7 @@ class _HomePageState extends State<HomePage> {
                                                       },
                                                     );
                                                     viewedGame = Game.fromJson(await createNewGame());
-                                                    Navigator.of(context).pushReplacementNamed('/game');
+                                                    Navigator.of(context).pushNamed('/game');
                                                   },
                                                   child: const Text('Yes'),
                                                 ),
@@ -377,7 +379,7 @@ class _HomePageState extends State<HomePage> {
                                                 joinGame(games[index]['id']);
                                                 getGameById(games[index]['id']);
                                                 viewedGame = Game.fromJson(await getGameById(games[index]['id']));
-                                                Navigator.of(context).pushReplacementNamed('/game');
+                                                Navigator.of(context).pushNamed('/game');
                                               },
                                               child: const Text('Yes'),
                                             ),
@@ -387,7 +389,7 @@ class _HomePageState extends State<HomePage> {
                                     );
                                   } else {
                                     viewedGame = Game.fromJson(games[index]);
-                                    Navigator.of(context).pushReplacementNamed('/game');
+                                    Navigator.of(context).pushNamed('/game');
                                   }
                                 },
                               );
@@ -520,7 +522,16 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                                 onTap: () {
-                                  // Handle item tap
+                                  Navigator.pushNamed(
+                                    context,
+                                    UserDetailsPage.routeName,
+                                    arguments: User(
+                                      id: users[index]['id'],
+                                      username: users[index]['username'],
+                                      gameCount: users[index]['game_count'],
+                                      winRate: users[index]['win_rate']
+                                    ),
+                                  );
                                 },
                               );
                             },

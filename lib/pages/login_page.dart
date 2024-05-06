@@ -81,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                 );
                 //print('Evo: $authToken');
                 if (authToken != null) {
-                  Navigator.of(context).pushReplacementNamed('/home');
+                  Navigator.of(context).pushNamed('/home');
                 }
               },
               style: ButtonStyle(
@@ -109,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, '/register');
+                    Navigator.pushNamed(context, '/register');
                   },
                   child: Text(
                     'Sign up',
