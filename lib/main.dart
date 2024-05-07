@@ -1,4 +1,8 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:tic_tac_arena/globals.dart';
 import 'package:tic_tac_arena/pages/game_page.dart';
 import 'package:tic_tac_arena/pages/home_page.dart';
 import 'package:tic_tac_arena/pages/login_page.dart';
@@ -55,7 +59,84 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    
+    StreamSubscription<List<ConnectivityResult>> subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) {
+      print(result);
+      if (result[0] == ConnectivityResult.none && connection != null && canShowConnectionMessageAgain) {
+        canShowConnectionMessageAgain = false;
+        showDialog(
+          context: context,
+          builder: (BuildContext loggingOutContext) {
+            return AlertDialog(
+              title: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text('Connection issue'),
+                ]
+              ),
+              content: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'Please check your internet connection'
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    canShowConnectionMessageAgain = true;
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+      if (result[0] != ConnectivityResult.none && connection != null && canShowConnectionMessageAgain) {
+        canShowConnectionMessageAgain = false;
+        showDialog(
+          context: context,
+          builder: (BuildContext loggingOutContext) {
+            return AlertDialog(
+              title: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text('Connection established'),
+                ]
+              ),
+              content: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'And we\'re back online!'
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    canShowConnectionMessageAgain = true;
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+      connection = result[0];
+    });
+
     return Scaffold(
       body: LoginPage(),
     );

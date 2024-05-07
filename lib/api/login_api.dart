@@ -7,9 +7,6 @@ import 'package:tic_tac_arena/models/reduced_user.dart';
 
 Future<String> login(BuildContext context, LoginInput loginInput) async {
 
-  SnackBar successSnackBar = const SnackBar(
-    content: Text('Welcome!'),
-  );
   SnackBar errorSnackBar = const SnackBar(
     content: Text('Error while trying to login.'),
   );
@@ -29,10 +26,14 @@ Future<String> login(BuildContext context, LoginInput loginInput) async {
   
   if (response.statusCode == 200) {
     final jsonData = jsonDecode(response.body);
-    ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
     loggedInUser = ReducedUser(
       id: jsonData['id'],
       username: jsonData['username']
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Welcome, ${loggedInUser!.username}!'),
+      )
     );
     return jsonData['token'];
   } else {

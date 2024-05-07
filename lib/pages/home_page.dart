@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                     context: context,
                     builder: (BuildContext subcontext) {
                       return AlertDialog(
-                        title: const Text('Confirmation'),
+                        title: const Text('Logout'),
                         content: const Text('Are you sure you want to leave Tic Tac Arena?'),
                         actions: <Widget>[
                           TextButton(
@@ -365,7 +365,7 @@ class _HomePageState extends State<HomePage> {
                                       context: context,
                                       builder: (BuildContext subcontext) {
                                         return AlertDialog(
-                                          title: const Text('Confirmation'),
+                                          title: const Text('Join game'),
                                           content: const Text('Would you like to join as second player?'),
                                           actions: <Widget>[
                                             TextButton(

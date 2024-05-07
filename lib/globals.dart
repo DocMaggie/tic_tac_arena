@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:tic_tac_arena/models/board.dart';
 import 'package:tic_tac_arena/models/game.dart';
@@ -12,6 +13,9 @@ String? gamesPreviousLink;
 
 String? usersNextLink;
 String? usersPreviousLink;
+
+ConnectivityResult? connection;
+bool canShowConnectionMessageAgain = true;
 
 Game? viewedGame = Game(
       id: 1930,

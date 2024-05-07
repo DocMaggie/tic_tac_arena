@@ -30,7 +30,7 @@ class UserDetailsPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: Tooltip(
-              message: 'Back to users list',
+              message: 'Back to homepage',
               child: IconButton(
                 onPressed: () {
                   Navigator.of(context).pushReplacementNamed('/home');
@@ -47,7 +47,7 @@ class UserDetailsPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Container(
+            SizedBox(
               height: size.width * 0.5,
               width: size.width * 0.5,
               child: Icon(
@@ -61,7 +61,7 @@ class UserDetailsPage extends StatelessWidget {
                 children: [
                   TableRow(
                     children: [
-                      TableCell(
+                      const TableCell(
                         child: Center(
                           child: Text('ID'),
                         ),
@@ -75,7 +75,7 @@ class UserDetailsPage extends StatelessWidget {
                   ),
                   TableRow(
                     children: [
-                      TableCell(
+                      const TableCell(
                         child: Center(
                           child: Text('Username'),
                         ),
@@ -89,7 +89,7 @@ class UserDetailsPage extends StatelessWidget {
                   ),
                   TableRow(
                     children: [
-                      TableCell(
+                      const TableCell(
                         child: Center(
                           child: Text('Game count'),
                         ),
@@ -97,6 +97,34 @@ class UserDetailsPage extends StatelessWidget {
                       TableCell(
                         child: Center(
                           child: Text(user.gameCount.toString()),
+                        ),
+                      ),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      const TableCell(
+                        child: Center(
+                          child: Text('Games won'),
+                        ),
+                      ),
+                      TableCell(
+                        child: Center(
+                          child: Text((user.gameCount * user.winRate).round().toString()),
+                        ),
+                      ),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      const TableCell(
+                        child: Center(
+                          child: Text('Games lost'),
+                        ),
+                      ),
+                      TableCell(
+                        child: Center(
+                          child: Text((user.gameCount * (1 - user.winRate)).round().toString()),
                         ),
                       ),
                     ],
