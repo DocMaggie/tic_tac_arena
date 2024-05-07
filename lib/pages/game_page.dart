@@ -556,8 +556,8 @@ class _GamePageState extends State<GamePage> {
                               viewedGame!.secondPlayer != null ? viewedGame!.secondPlayer!.username : '?',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: whosTurnIsItId == viewedGame!.secondPlayer!.id && viewedGame!.winner == null ?
-                                     Color.fromARGB(255, 216, 68, 0) : null,
+                                color: viewedGame!.secondPlayer != null ? (whosTurnIsItId == viewedGame!.secondPlayer!.id && viewedGame!.winner == null ?
+                                     Color.fromARGB(255, 216, 68, 0) : null) : null,
                               ),
                             ),
                             if (viewedGame!.secondPlayer != null) Text(
